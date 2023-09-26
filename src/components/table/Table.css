@@ -5,9 +5,13 @@
 
 .tablehead
 {
-    font-weight: bold !important;;
+    font-weight: bold !important;
 }
 .main-container
 {
     margin: 10px 60px;
+}
+.heading
+{
+    font-weight: bold !important;
 }

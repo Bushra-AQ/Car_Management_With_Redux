@@ -53,6 +53,7 @@ const ModalData = ({
   selectedCar,
   selectedIndex,
   getCarsData,
+  setIsLoading,
 }) => {
   const dispatch = useDispatch();
   const isViewForm = () => formType === "view";
@@ -73,19 +74,23 @@ const ModalData = ({
     resolver: yupResolver(schema),
   });
   console.log("selectedCar===", selectedCar);
-  const onSubmit = (data) => {
-    if (isUpdateForm()) {
-      dispatch(update_Car(selectedIndex, data));
-      getCarsData();
-    } else {
-      add_Car(data);
-      getCarsData();
-      handleClose();
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      if (isUpdateForm()) {
+        await dispatch(update_Car(selectedIndex, data));
+        getCarsData();
+      } else {
+        add_Car(data);
+        getCarsData();
+        handleClose();
+      }
+    } catch (error) {
+      console.log("error", error);
     }
-
+    setIsLoading(false);
     reset();
     handleClose();
-    getCarsData();
   };
 
   return (

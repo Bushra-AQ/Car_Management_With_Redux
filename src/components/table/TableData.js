@@ -15,6 +15,7 @@ import "./Table.css";
 import ModalData from "../modalData/ModalData";
 import { delete_Car } from "../../Redux/action/crudAction";
 import { useSelector, useDispatch } from "react-redux";
+import Loader from "../loader/Loader";
 const CarsType = {
   aventador: "Aventador",
   huracan: "Huracan",
@@ -31,7 +32,7 @@ const TableData = () => {
   const [formType, setFormType] = useState("create");
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleCreate = () => {
     setOpen(true);
     setFormType("create");
@@ -46,8 +47,14 @@ const TableData = () => {
     getCarsData();
   }, []);
 
-  const getCarsData = () => {
-    dispatch(fetchData());
+  const getCarsData = async () => {
+    try {
+      setIsLoading(true);
+      await dispatch(fetchData());
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
 
   const handleClose = () => {
@@ -67,10 +74,16 @@ const TableData = () => {
     setFormType("view");
     setSelectedCar(car);
   };
-  const handleDelete = (carId) => {
-    console.log("delete-index", carId);
-    const res = dispatch(delete_Car(carId));
-    getCarsData();
+  const handleDelete = async (carId) => {
+    setIsLoading(true);
+    try {
+      await dispatch(delete_Car(carId));
+      getCarsData();
+    } catch (error) {
+      console.log(error);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -97,19 +110,20 @@ const TableData = () => {
           selectedCar={selectedCar}
           selectedIndex={selectedIndex}
           getCarsData={getCarsData}
+          setIsLoading={setIsLoading}
         />
       )}
-
+      {isLoading && <Loader />}
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Year</TableCell>
-              <TableCell>Mileage</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell className="heading">ID</TableCell>
+              <TableCell className="heading">Name</TableCell>
+              <TableCell className="heading">Type</TableCell>
+              <TableCell className="heading">Year</TableCell>
+              <TableCell className="heading">Mileage</TableCell>
+              <TableCell className="heading">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
